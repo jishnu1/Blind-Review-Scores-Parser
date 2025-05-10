@@ -56,12 +56,12 @@ HEADERS = {
 
 # HELPER FUNCTIONS
 
-def build_url(company_name):
-    formatted_name = format_company_name(company_name)
+def build_url(input_company_name):
+    formatted_name = format_company_name(input_company_name)
     return f"{BLIND_URL}{formatted_name}"
 
-def format_company_name(company_name):
-    return company_name.replace(" ", "-").lower()
+def format_company_name(input_company_name):
+    return input_company_name.replace(" ", "-").lower()
 
 def read_database_file():
     try:
@@ -85,12 +85,12 @@ def get_company_data_from_database(database, company_name):
     else:
         return None
 
-def get_company_data_from_blind(database, company_name):
-    url = build_url(company_name)
+def get_company_data_from_blind(database, input_company_name):
+    url = build_url(input_company_name)
     response = requests.get(url, headers=HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
     if response.status_code != 200:
-        print(f"Failed to retrieve data for {company_name}. Status code: {response.status_code}")
+        print(f"Failed to retrieve data for {input_company_name}. Status code: {response.status_code}")
     else:
         try:
             # general
@@ -153,13 +153,13 @@ def get_company_data_from_blind(database, company_name):
                 # other
                 "last_updated": last_updated
             }
-            database[company_name] = company_data
+            database[input_company_name] = company_data
         except AttributeError as e:
             print(f"Error parsing data for {company_name}: {e}")
             return None
     return company_data
 
-def process_data(company_names):
+def process_data(input_company_names):
     with open(OUTPUT_FILE_PATH, "w", newline="") as file:
         writer = csv.writer(file)
         header_row = []
@@ -167,13 +167,13 @@ def process_data(company_names):
             if value:
                 header_row.append(key)
         writer.writerow(header_row)
-        for i, company_name in enumerate(company_names):
-            print(f"Processing {i + 1}/{len(company_names)}: {company_name}")
-            company_data = get_company_data_from_database(database, company_name)
+        for i, input_company_name in enumerate(input_company_names):
+            print(f"Processing {i + 1}/{len(input_company_names)}: {input_company_name}")
+            company_data = get_company_data_from_database(database, input_company_name)
             if company_data:
                 print("Got data from database")
             else:
-                company_data = get_company_data_from_blind(database, company_name)
+                company_data = get_company_data_from_blind(database, input_company_name)
                 if company_data:
                     print("Got data from Blind")
                 time.sleep(TIME_DELAY)
@@ -187,13 +187,13 @@ def process_data(company_names):
                             data_row.append("")
                 writer.writerow(data_row)
             else:
-                writer.writerow(company_name)
+                writer.writerow(input_company_name)
 
 
 # MAIN FUNCTION
 
 if __name__ == "__main__":
-    company_names = read_input_file()
+    input_company_names = read_input_file()
     database = read_database_file()
-    process_data(company_names)
+    process_data(input_company_names)
     write_database_file(database)
