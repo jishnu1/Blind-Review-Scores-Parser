@@ -43,6 +43,10 @@ HEADERS = {
 # Set the time delay (seconds) between requests to avoid overwhelming the server
 TIME_DELAY = 1
 
+# Set the maximum age (days) of the data in the database before it is considered stale
+# (this is not used in the current version of the code, but can be used for future improvements)
+MAX_AGE = 60
+
 # CONSTANTS
 
 BLIND_URL = "https://www.teamblind.com/company/"
@@ -96,31 +100,44 @@ def get_company_data_from_blind(database, company_name):
             url = link_tag["href"] if link_tag and "href" in link_tag.attrs else None
 
             # overview
-            # TODO
+            website = soup.find("h3", class_="text-base font-semibold sm:text-lg").text.strip()
+            overview_div_list = soup.find_all("div", class_="text-base font-semibold sm:text-lg")
+            industry = overview_div_list[0].text.strip()
+            locations = overview_div_list[1].text.strip()
+            founded = overview_div_list[2].text.strip()
+            size = overview_div_list[3].text.strip()
+            salary = overview_div_list[4].text.strip()
 
             # reviews
             overall_score = soup.find("div", class_="flex items-start gap-2 border-b border-gray-300 pb-1 pr-4 lg:flex-col lg:border-b-0 lg:border-r").find("div", class_="text-xl font-semibold").text.strip()
-            subscores_div = soup.find("div", class_="grid grid-flow-row grid-cols-1 gap-x-10 gap-y-4 lg:ml-9 lg:grid-cols-2").find_all("div", class_="font-semibold")
-            career_growth_score = subscores_div[0].text.strip()
-            work_life_balance_score = subscores_div[1].text.strip()
-            compensation_benefits_score = subscores_div[2].text.strip()
-            company_culture_score = subscores_div[3].text.strip()
-            management_score = subscores_div[4].text.strip()
+            reviews_div_list = soup.find("div", class_="grid grid-flow-row grid-cols-1 gap-x-10 gap-y-4 lg:ml-9 lg:grid-cols-2").find_all("div", class_="font-semibold")
+            career_growth_score = reviews_div_list[0].text.strip()
+            work_life_balance_score = reviews_div_list[1].text.strip()
+            compensation_benefits_score = reviews_div_list[2].text.strip()
+            company_culture_score = reviews_div_list[3].text.strip()
+            management_score = reviews_div_list[4].text.strip()
 
             # compensation
-            # TODO
+            median_total_compensation = soup.find("p", class_="font-bold text-blue-system sm:text-lg").text.strip()
+            compensation_h5_list = soup.find_all("h5", class_="text-md font-semibold")
+            _25th_percentile = compensation_h5_list[0].text.strip()
+            _70th_percentile = compensation_h5_list[1].text.strip()
+            _90th_percentile = compensation_h5_list[2].text.strip()
+            
+            # other
+            last_updated = time.strftime("%Y-%m-%d")
 
             company_data = {
                 # general
                 "company_name": company_name,
                 "url": url,
                 # overview
-                "website": None,
-                "industry": None,
-                "locations": None,
-                "founded": None,
-                "size": None,
-                "salary": None,
+                "website": website,
+                "industry": industry,
+                "locations": locations,
+                "founded": founded,
+                "size": size,
+                "salary": salary,
                 # reviews
                 "overall": overall_score,
                 "career_growth": career_growth_score,
@@ -129,12 +146,12 @@ def get_company_data_from_blind(database, company_name):
                 "company_culture": company_culture_score,
                 "management": management_score,
                 # compensation
-                "median_total_compensation": None,
-                "25th_percentile": None,
-                "70th_percentile": None,
-                "90th_percentile": None,
+                "median_total_compensation": median_total_compensation,
+                "25th_percentile": _25th_percentile,
+                "70th_percentile": _70th_percentile,
+                "90th_percentile": _90th_percentile,
                 # other
-                "last_updated": None
+                "last_updated": last_updated
             }
             database[company_name] = company_data
         except AttributeError as e:
