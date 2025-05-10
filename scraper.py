@@ -45,7 +45,6 @@ OUTPUT_FILE_HEADERS = {
 TIME_DELAY = 1
 
 # Set the maximum age (days) of the data in the database before it is considered stale
-# (this is not used in the current version of the code, but can be used for future improvements)
 MAX_AGE = 60
 
 # CONSTANTS
@@ -163,7 +162,7 @@ def get_company_data_from_blind(database, input_company_name):
             }
             database[input_company_name] = company_data
         except AttributeError as e:
-            print(f"Error parsing data for {company_name}: {e}")
+            print(f"\tError parsing data for {company_name}: {e}")
             return None
     return company_data
 
@@ -179,11 +178,11 @@ def process_data(input_company_names):
             print(f"Processing {i + 1}/{len(input_company_names)}: {input_company_name}")
             company_data = get_company_data_from_database(database, input_company_name)
             if company_data:
-                print("Got data from database")
+                print("\tGot data from database")
             else:
                 company_data = get_company_data_from_blind(database, input_company_name)
                 if company_data:
-                    print("Got data from Blind")
+                    print("\tGot data from Blind")
                 time.sleep(TIME_DELAY)
             if company_data:
                 data_row = []
