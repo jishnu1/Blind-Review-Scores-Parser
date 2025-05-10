@@ -3,6 +3,7 @@ import json
 import requests
 import time
 from bs4 import BeautifulSoup
+from datetime import datetime
 
 # CONFIGURATION (MODIFY THESE)
 
@@ -81,7 +82,14 @@ def read_input_file():
 
 def get_company_data_from_database(database, company_name):
     if company_name in database:
-        return database[company_name]
+        company_data = database[company_name]
+        current_date = datetime.strptime(time.strftime("%Y-%m-%d"), "%Y-%m-%d")
+        last_updated = datetime.strptime(company_data["last_updated"], "%Y-%m-%d")
+        if (current_date - last_updated).days > MAX_AGE:
+            print(f"\tData for {company_name} is stale. Fetching new data.")
+            del database[company_name]
+            return None
+        return company_data
     else:
         return None
 
@@ -125,7 +133,7 @@ def get_company_data_from_blind(database, input_company_name):
             _90th_percentile = compensation_h5_list[2].text.strip()
             
             # other
-            last_updated = time.strftime("%Y-%m-%d")
+            current_date = time.strftime("%Y-%m-%d")
 
             company_data = {
                 # general
@@ -151,7 +159,7 @@ def get_company_data_from_blind(database, input_company_name):
                 "70th_percentile": _70th_percentile,
                 "90th_percentile": _90th_percentile,
                 # other
-                "last_updated": last_updated
+                "last_updated": current_date
             }
             database[input_company_name] = company_data
         except AttributeError as e:
