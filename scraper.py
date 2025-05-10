@@ -13,7 +13,7 @@ DATABASE_FILE_PATH = "database/database.json"
 
 # Set fields you want in the output file to True, and those you don't want to False
 # The fields in the output file will be in the same order as they are in this dictionary (MAYBE)
-HEADERS = {
+OUTPUT_FILE_HEADERS = {
     # general
     "company_name": True,
     "url":          True,
@@ -50,7 +50,7 @@ MAX_AGE = 60
 # CONSTANTS
 
 BLIND_URL = "https://www.teamblind.com/company/"
-HEADERS = {
+HTTP_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 }
 
@@ -87,7 +87,7 @@ def get_company_data_from_database(database, company_name):
 
 def get_company_data_from_blind(database, input_company_name):
     url = build_url(input_company_name)
-    response = requests.get(url, headers=HEADERS)
+    response = requests.get(url, headers=HTTP_HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
     if response.status_code != 200:
         print(f"Failed to retrieve data for {input_company_name}. Status code: {response.status_code}")
@@ -163,7 +163,7 @@ def process_data(input_company_names):
     with open(OUTPUT_FILE_PATH, "w", newline="") as file:
         writer = csv.writer(file)
         header_row = []
-        for key, value in HEADERS.items():
+        for key, value in OUTPUT_FILE_HEADERS.items():
             if value:
                 header_row.append(key)
         writer.writerow(header_row)
@@ -179,7 +179,7 @@ def process_data(input_company_names):
                 time.sleep(TIME_DELAY)
             if company_data:
                 data_row = []
-                for key, value in HEADERS.items():
+                for key, value in OUTPUT_FILE_HEADERS.items():
                     if value:
                         if key in company_data:
                             data_row.append(company_data[key])
