@@ -12,7 +12,7 @@ OUTPUT_FILE_PATH   = "output/output_5.csv"
 DATABASE_FILE_PATH = "database/database.json"
 
 # Set fields you want in the output file to True, and those you don't want to False
-# The fields in the output file will be in the same order as they are in this dictionary (MAYBE)
+# The fields in the output file will be in the same order as they are in this dictionary
 OUTPUT_FILE_HEADERS = {
     # general
     "company_name": True,
