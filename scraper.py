@@ -61,7 +61,7 @@ def build_url(input_company_name):
     return f"{BLIND_URL}{formatted_name}"
 
 def format_company_name(input_company_name):
-    return input_company_name.replace(" ", "-").lower()
+    return input_company_name.replace(" & ", "&").replace(" ", "-").replace(".", "")
 
 def read_database_file():
     try:
