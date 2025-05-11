@@ -8,7 +8,7 @@ from datetime import datetime
 # CONFIGURATION (MODIFY THESE)
 
 # Paths to input, output, and database files
-INPUT_FILE_PATH    = "input/input_5.txt"
+INPUT_FILE_PATH    = "my_input/input_debug.txt"
 OUTPUT_FILE_PATH   = "output/output_5.csv"
 DATABASE_FILE_PATH = "database/database.json"
 
@@ -97,7 +97,8 @@ def get_company_data_from_blind(database, input_company_name):
     response = requests.get(url, headers=HTTP_HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
     if response.status_code != 200:
-        print(f"Failed to retrieve data for {input_company_name}. Status code: {response.status_code}")
+        print(f"\tFailed data retrieval. Status code: {response.status_code}")
+        return None
     else:
         try:
             # general
@@ -161,10 +162,10 @@ def get_company_data_from_blind(database, input_company_name):
                 "last_updated": current_date
             }
             database[input_company_name] = company_data
+            return company_data
         except AttributeError as e:
-            print(f"\tError parsing data for {company_name}: {e}")
+            print(f"\tFailed data parsing: {e}")
             return None
-    return company_data
 
 def process_data(input_company_names):
     with open(OUTPUT_FILE_PATH, "w", newline="") as file:
@@ -176,6 +177,10 @@ def process_data(input_company_names):
         writer.writerow(header_row)
         for i, input_company_name in enumerate(input_company_names):
             print(f"Processing {i + 1}/{len(input_company_names)}: {input_company_name}")
+            if not input_company_name:
+                print("\tSkipped")
+                writer.writerow("")
+                continue
             company_data = get_company_data_from_database(database, input_company_name)
             if company_data:
                 print("\tGot data from database")
@@ -184,17 +189,17 @@ def process_data(input_company_names):
                 if company_data:
                     print("\tGot data from Blind")
                 time.sleep(TIME_DELAY)
+            data_row = []
             if company_data:
-                data_row = []
                 for key, value in OUTPUT_FILE_HEADERS.items():
                     if value:
                         if key in company_data:
                             data_row.append(company_data[key])
                         else:
                             data_row.append("")
-                writer.writerow(data_row)
             else:
-                writer.writerow(input_company_name)
+                data_row.append(input_company_name)
+            writer.writerow(data_row)
 
 
 # MAIN FUNCTION
