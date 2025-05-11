@@ -8,7 +8,7 @@ from datetime import datetime
 # CONFIGURATION (MODIFY THESE)
 
 # Paths to input, output, and database files
-INPUT_FILE_PATH    = "input/input.txt"
+INPUT_FILE_PATH    = "my_input/input_large.txt"
 OUTPUT_FILE_PATH   = "output/output.csv"
 DATABASE_FILE_PATH = "database/database.json"
 
@@ -41,10 +41,16 @@ OUTPUT_FILE_HEADERS = {
     "last_updated":    True
 }
 
-# Set the time delay (seconds) between requests to avoid overwhelming the server
+# Set the time delay (seconds) between requests
+# This is to avoid overwhelming the server and getting blocked
 TIME_DELAY = 1
 
+# Set the maximum number of requests to send in a single run
+# This is to avoid overwhelming the server and getting blocked
+MAX_REQUESTS = 50
+
 # Set the maximum age (days) of the data in the database before it is considered stale
+# This is to avoid using outdated data
 MAX_AGE = 60
 
 # CONSTANTS
@@ -97,7 +103,7 @@ def get_company_data_from_blind(database, input_company_name):
     response = requests.get(url, headers=HTTP_HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
     if response.status_code != 200:
-        print(f"\tFAILED: Status Code = {response.status_code}")
+        print(f"\t FAILED: Status Code = {response.status_code}")
         return None
     else:
         try:
@@ -164,11 +170,12 @@ def get_company_data_from_blind(database, input_company_name):
             database[input_company_name] = company_data
             return company_data
         except AttributeError as e:
-            print(f"\tFAILED: {e}")
+            print(f"\t FAILED: {e}")
             return None
 
 def process_data(input_company_names):
     with open(OUTPUT_FILE_PATH, "w", newline="") as file:
+        requests_made = 0
         writer = csv.writer(file)
         header_row = []
         for key, value in OUTPUT_FILE_HEADERS.items():
@@ -185,10 +192,14 @@ def process_data(input_company_names):
             if company_data:
                 print("\tSUCCESS: Got data from database")
             else:
-                company_data = get_company_data_from_blind(database, input_company_name)
-                if company_data:
-                    print("\tSUCCESS: Got data from Blind")
-                time.sleep(TIME_DELAY)
+                if requests_made >= MAX_REQUESTS:
+                    print("\tSKIPPED: Maximum number of requests reached")
+                else:
+                    company_data = get_company_data_from_blind(database, input_company_name)
+                    if company_data:
+                        print("\tSUCCESS: Got data from Blind")
+                    requests_made += 1
+                    time.sleep(TIME_DELAY)
             data_row = []
             if company_data:
                 for key, value in OUTPUT_FILE_HEADERS.items():
