@@ -8,8 +8,8 @@ from datetime import datetime
 # CONFIGURATION (MODIFY THESE)
 
 # Paths to input, output, and database files
-INPUT_FILE_PATH    = "input/input_5.txt"
-OUTPUT_FILE_PATH   = "output/output_5.csv"
+INPUT_FILE_PATH    = "input/input.txt"
+OUTPUT_FILE_PATH   = "output/output.csv"
 DATABASE_FILE_PATH = "database/database.json"
 
 # Set fields you want in the output file to True, and those you don't want to False
@@ -97,7 +97,7 @@ def get_company_data_from_blind(database, input_company_name):
     response = requests.get(url, headers=HTTP_HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
     if response.status_code != 200:
-        print(f"\tFailed data retrieval. Status code: {response.status_code}")
+        print(f"\tFAILED: Status Code = {response.status_code}")
         return None
     else:
         try:
@@ -164,7 +164,7 @@ def get_company_data_from_blind(database, input_company_name):
             database[input_company_name] = company_data
             return company_data
         except AttributeError as e:
-            print(f"\tFailed data parsing: {e}")
+            print(f"\tFAILED: {e}")
             return None
 
 def process_data(input_company_names):
@@ -178,16 +178,16 @@ def process_data(input_company_names):
         for i, input_company_name in enumerate(input_company_names):
             print(f"Processing {i + 1}/{len(input_company_names)}: {input_company_name}")
             if not input_company_name:
-                print("\tSkipped")
+                print("\tSKIPPED: Empty company name")
                 writer.writerow("")
                 continue
             company_data = get_company_data_from_database(database, input_company_name)
             if company_data:
-                print("\tGot data from database")
+                print("\tSUCCESS: Got data from database")
             else:
                 company_data = get_company_data_from_blind(database, input_company_name)
                 if company_data:
-                    print("\tGot data from Blind")
+                    print("\tSUCCESS: Got data from Blind")
                 time.sleep(TIME_DELAY)
             data_row = []
             if company_data:
