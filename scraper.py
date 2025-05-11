@@ -8,7 +8,7 @@ from datetime import datetime
 # CONFIGURATION (MODIFY THESE)
 
 # Paths to input, output, and database files
-INPUT_FILE_PATH    = "my_input/input_debug.txt"
+INPUT_FILE_PATH    = "input/input_5.txt"
 OUTPUT_FILE_PATH   = "output/output_5.csv"
 DATABASE_FILE_PATH = "database/database.json"
 
