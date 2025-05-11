@@ -2,14 +2,15 @@ import csv
 import json
 import requests
 import time
+import traceback
 from bs4 import BeautifulSoup
 from datetime import datetime
 
 # CONFIGURATION (MODIFY THESE)
 
 # Paths to input, output, and database files
-INPUT_FILE_PATH    = "my_input/input_large.txt"
-OUTPUT_FILE_PATH   = "output/output.csv"
+INPUT_FILE_PATH    = "my_input/input_fail.txt"
+OUTPUT_FILE_PATH   = "output/output_debug.csv"
 DATABASE_FILE_PATH = "database/database.json"
 
 # Set fields you want in the output file to True, and those you don't want to False
@@ -91,7 +92,7 @@ def get_company_data_from_database(database, company_name):
         current_date = datetime.strptime(time.strftime("%Y-%m-%d"), "%Y-%m-%d")
         last_updated = datetime.strptime(company_data["last_updated"], "%Y-%m-%d")
         if (current_date - last_updated).days > MAX_AGE:
-            print(f"\tData for {company_name} is stale. Fetching new data.")
+            print(f"\tData for {company_name} is stale. Fetching new data.", flush=True)
             del database[company_name]
             return None
         return company_data
@@ -103,7 +104,7 @@ def get_company_data_from_blind(database, input_company_name):
     response = requests.get(url, headers=HTTP_HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
     if response.status_code != 200:
-        print(f"\t FAILED: Status Code = {response.status_code}")
+        print(f"\t FAILED: Status Code = {response.status_code}", flush=True)
         return None
     else:
         try:
@@ -169,8 +170,9 @@ def get_company_data_from_blind(database, input_company_name):
             }
             database[input_company_name] = company_data
             return company_data
-        except AttributeError as e:
-            print(f"\t FAILED: {e}")
+        except Exception as e:
+            print(f"\t FAILED: {e}", flush=True)
+            # traceback.print_exc()
             return None
 
 def process_data(input_company_names):
@@ -183,21 +185,21 @@ def process_data(input_company_names):
                 header_row.append(key)
         writer.writerow(header_row)
         for i, input_company_name in enumerate(input_company_names):
-            print(f"Processing {i + 1}/{len(input_company_names)}: {input_company_name}")
+            print(f"Processing {i + 1}/{len(input_company_names)}: {input_company_name}", flush=True)
             if not input_company_name:
-                print("\tSKIPPED: Empty company name")
+                print("\tSKIPPED: Empty company name", flush=True)
                 writer.writerow("")
                 continue
             company_data = get_company_data_from_database(database, input_company_name)
             if company_data:
-                print("\tSUCCESS: Got data from database")
+                print("\tSUCCESS: Got data from database", flush=True)
             else:
                 if requests_made >= MAX_REQUESTS:
-                    print("\tSKIPPED: Maximum number of requests reached")
+                    print("\tSKIPPED: Maximum number of requests reached", flush=True)
                 else:
                     company_data = get_company_data_from_blind(database, input_company_name)
                     if company_data:
-                        print("\tSUCCESS: Got data from Blind")
+                        print("\tSUCCESS: Got data from Blind", flush=True)
                     requests_made += 1
                     time.sleep(TIME_DELAY)
             data_row = []
