@@ -9,8 +9,8 @@ from datetime import datetime
 # CONFIGURATION (MODIFY THESE)
 
 # Paths to input, output, and database files
-INPUT_FILE_PATH    = "my_input/input_fail.txt"
-OUTPUT_FILE_PATH   = "output/output_debug.csv"
+INPUT_FILE_PATH    = "my_input/input.txt"
+OUTPUT_FILE_PATH   = "output/output.csv"
 DATABASE_FILE_PATH = "database/database.json"
 
 # Set fields you want in the output file to True, and those you don't want to False
@@ -68,7 +68,7 @@ def build_url(input_company_name):
     return f"{BLIND_URL}{formatted_name}"
 
 def format_company_name(input_company_name):
-    return input_company_name.replace(" & ", "&").replace(" ", "-").replace(".", "")
+    return input_company_name.replace(" & ", "&").replace(" ", "-")
 
 def read_database_file():
     try:
@@ -104,7 +104,7 @@ def get_company_data_from_blind(database, input_company_name):
     response = requests.get(url, headers=HTTP_HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
     if response.status_code != 200:
-        print(f"\t FAILED: Status Code = {response.status_code}", flush=True)
+        print(f"\tFAILURE: Status Code = {response.status_code}", flush=True)
         return None
     else:
         try:
@@ -171,8 +171,8 @@ def get_company_data_from_blind(database, input_company_name):
             database[input_company_name] = company_data
             return company_data
         except Exception as e:
-            print(f"\t FAILED: {e}", flush=True)
-            # traceback.print_exc()
+            print(f"\tFAILURE: {e}", flush=True)
+            traceback.print_exc()
             return None
 
 def process_data(input_company_names):
