@@ -6,60 +6,24 @@ import traceback
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-# CONFIGURATION (MODIFY THESE)
+# CONFIGURATION FILE PATH (MODIFY THIS)
 
-# Paths to input, output, and database files
-INPUT_FILE_PATH    = "my_input/input.txt"
-OUTPUT_FILE_PATH   = "output/output.csv"
-DATABASE_FILE_PATH = "database/database.json"
+CONFIG_FILE_PATH = "config/config.json"
 
-# Set fields you want in the output file to True, and those you don't want to False
-# The fields in the output file will be in the same order as they are in this dictionary
-OUTPUT_FILE_HEADERS = {
-    # general
-    "company_name": True,
-    "url":          True,
-    # overview
-    "website":   False,
-    "industry":  True,
-    "locations": True,
-    "founded":   False,
-    "size":      True,
-    "salary":    False,
-    # reviews
-    "overall":               True,
-    "career_growth":         True,
-    "work_life_balance":     True,
-    "compensation_benefits": True,
-    "company_culture":       True,
-    "management":            True,
-    # compensation"
-    "median_total_compensation": True,
-    "25th_percentile": False,
-    "70th_percentile": False,
-    "90th_percentile": False,
-    # other
-    "last_updated":    True
-}
+# Load configuration from config.json
+with open(CONFIG_FILE_PATH, "r") as config_file:
+    config = json.load(config_file)
 
-# Set the time delay (seconds) between requests
-# This is to avoid overwhelming the server and getting blocked
-TIME_DELAY = 1
-
-# Set the maximum number of requests to send in a single run
-# This is to avoid overwhelming the server and getting blocked
-MAX_REQUESTS = 50
-
-# Set the maximum age (days) of the data in the database before it is considered stale
-# This is to avoid using outdated data
-MAX_AGE = 60
-
-# CONSTANTS
+# Access configuration values
+INPUT_FILE_PATH = config["INPUT_FILE_PATH"]
+OUTPUT_FILE_PATH = config["OUTPUT_FILE_PATH"]
+DATABASE_FILE_PATH = config["DATABASE_FILE_PATH"]
+OUTPUT_FILE_HEADERS = config["OUTPUT_FILE_HEADERS"]
+TIME_DELAY = config["TIME_DELAY"]
+MAX_REQUESTS = config["MAX_REQUESTS"]
+MAX_AGE = config["MAX_AGE"]
 
 BLIND_URL = "https://www.teamblind.com/company/"
-HTTP_HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-}
 
 # HELPER FUNCTIONS
 
@@ -206,6 +170,8 @@ def process_data(input_company_names):
             if company_data:
                 for key, value in OUTPUT_FILE_HEADERS.items():
                     if value:
+                        if key == "tier":
+                            tier = calculate_tier(company_data)
                         if key in company_data:
                             data_row.append(company_data[key])
                         else:
@@ -214,6 +180,22 @@ def process_data(input_company_names):
                 data_row.append(input_company_name)
             writer.writerow(data_row)
 
+# TIER MAPPER
+
+def calculate_tier(company_data):
+    if company_data["work_life_balance"] < 3.4 \
+        or company_data["company_culture"] < 3.1 \
+        or company_data["size"] == "1 to 50 employees" \
+        or company_data["size"] == "51 to 200 employees":
+        return 'C'
+    elif company_data["work_life_balance"] < 3.8 \
+        or company_data["company_culture"] < 3.5:
+        return 'B'
+    elif company_data["work_life_balance"] < 4.2 \
+        or company_data["company_culture"] < 3.9:
+        return 'A'
+    else:
+        return '$'
 
 # MAIN FUNCTION
 

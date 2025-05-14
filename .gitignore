@@ -1,4 +1,6 @@
-my_input
+config/config.json
+# input/input.txt
 output
 database
 notes
+my_input

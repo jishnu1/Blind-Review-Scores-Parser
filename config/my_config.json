@@ -1,0 +1,33 @@
+{
+    "INPUT_FILE_PATH": "input/input.txt",
+    "OUTPUT_FILE_PATH": "output/output.csv",
+    "DATABASE_FILE_PATH": "database/database.json",
+    "OUTPUT_FILE_HEADERS": {
+        "tier": true,
+        "company_name": true,
+        "url": true,
+        "website": false,
+        "industry": true,
+        "locations": true,
+        "founded": false,
+        "size": true,
+        "salary": false,
+        "overall": true,
+        "career_growth": true,
+        "work_life_balance": true,
+        "compensation_benefits": true,
+        "company_culture": true,
+        "management": true,
+        "median_total_compensation": true,
+        "25th_percentile": false,
+        "70th_percentile": false,
+        "90th_percentile": false,
+        "last_updated": false
+    },
+    "TIME_DELAY": 1,
+    "MAX_REQUESTS": 50,
+    "MAX_AGE": 30,
+    "HTTP_HEADERS": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+    }
+}

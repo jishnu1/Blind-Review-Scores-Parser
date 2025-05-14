@@ -1,0 +1,44 @@
+
+# Description
+
+This program allows users to easily determine how good companies are to work at based on their specific criteria (compensation, work life balance, etc.). The program takes as input a list of companies, fetches company data from Blind website, categorizes companies into tiers based on criteria provided, and then outputs data requested into a csv file. 
+
+# Instructions
+
+- Set fields below according to your preferences
+- Run scraper.py
+- View results in output file
+
+## Main File - scraper.py
+
+- CONFIG_FILE_PATH
+  - set path to config file
+  - file is required to exist beforehand
+
+## Config File - config.json
+
+- INPUT_FILE_PATH
+  - set path to input file
+  - file is required to exist beforehand
+- OUTPUT_FILE_PATH
+  - set path to output file
+  - file is automatically created
+- DATABASE_FILE_PATH
+  - set path to database file
+  - file is automatically created
+- OUTPUT_FILE_HEADERS
+  - set fields you want in output file to true, and those you don't want to false
+- TIME_DELAY
+  - set time delay (seconds) between web requests
+- MAX_REQUESTS
+  - set maximum number of web requests to send in a single run
+- MAX_AGE
+  - set maximum age (days) of data in database before it is considered stale
+- HTTP_HEADERS
+  - set HTTP headers to allow access to website via python
+  - you do not need to modify this
+
+# Tier Mapper File - mapper.json
+
+- create a tier mapper file containing a 
+
