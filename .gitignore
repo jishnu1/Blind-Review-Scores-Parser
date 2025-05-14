@@ -1,5 +1,6 @@
 config/config.json
-# input/input.txt
+input/input.txt
+utils/tier_calculator.py
 output
 database
 notes

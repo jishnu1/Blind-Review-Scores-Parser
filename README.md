@@ -5,14 +5,18 @@ This program allows users to easily determine how good companies are to work at 
 
 # Instructions
 
-- Set fields below according to your preferences
+- Create required files and set fields below according to your preferences
+- See example files and my files for reference
 - Run scraper.py
 - View results in output file
 
-## Main File - scraper.py
+## Main File - blind_scraper.py
 
 - CONFIG_FILE_PATH
   - set path to config file
+  - file is required to exist beforehand
+- import calculate_tier
+  - set import to python file containing calculate_tier function
   - file is required to exist beforehand
 
 ## Config File - config.json
@@ -38,7 +42,7 @@ This program allows users to easily determine how good companies are to work at 
   - set HTTP headers to allow access to website via python
   - you do not need to modify this
 
-# Tier Mapper File - mapper.json
+# Tier Calculator File - tier_calculator.py
 
-- create a tier mapper file containing a 
-
+- create a function named calculate_tier that takes as input company_data and outputs a tier based on your criteria
+- see blind_scraper.py -> get_company_data_from_blind() or example_config.json -> OUTPUT_FILE_HEADERS for a list of fields in company_data

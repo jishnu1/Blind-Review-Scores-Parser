@@ -5,6 +5,7 @@ import time
 import traceback
 from bs4 import BeautifulSoup
 from datetime import datetime
+from utils.tier_calculator import calculate_tier
 
 # CONFIGURATION FILE PATH (MODIFY THIS)
 
@@ -22,6 +23,7 @@ OUTPUT_FILE_HEADERS = config["OUTPUT_FILE_HEADERS"]
 TIME_DELAY = config["TIME_DELAY"]
 MAX_REQUESTS = config["MAX_REQUESTS"]
 MAX_AGE = config["MAX_AGE"]
+HTTP_HEADERS = config["HTTP_HEADERS"]
 
 BLIND_URL = "https://www.teamblind.com/company/"
 
@@ -172,30 +174,14 @@ def process_data(input_company_names):
                     if value:
                         if key == "tier":
                             tier = calculate_tier(company_data)
-                        if key in company_data:
+                            data_row.append(tier)
+                        elif key in company_data:
                             data_row.append(company_data[key])
                         else:
                             data_row.append("")
             else:
                 data_row.append(input_company_name)
             writer.writerow(data_row)
-
-# TIER MAPPER
-
-def calculate_tier(company_data):
-    if company_data["work_life_balance"] < 3.4 \
-        or company_data["company_culture"] < 3.1 \
-        or company_data["size"] == "1 to 50 employees" \
-        or company_data["size"] == "51 to 200 employees":
-        return 'C'
-    elif company_data["work_life_balance"] < 3.8 \
-        or company_data["company_culture"] < 3.5:
-        return 'B'
-    elif company_data["work_life_balance"] < 4.2 \
-        or company_data["company_culture"] < 3.9:
-        return 'A'
-    else:
-        return '$'
 
 # MAIN FUNCTION
 
