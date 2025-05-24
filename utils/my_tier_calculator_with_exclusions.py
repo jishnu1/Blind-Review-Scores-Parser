@@ -4,7 +4,7 @@ exclusions = {
 }
 
 def calculate_tier(company_data):
-    if (company_data["name"]) in exclusions:
+    if (company_data["company_name"]) in exclusions:
         return 'X'
     elif float(company_data["work_life_balance"]) < 3.4 \
         or float(company_data["company_culture"]) < 3.1 \
