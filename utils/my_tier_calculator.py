@@ -1,5 +1,13 @@
+exclusions = {
+    "Audible": "fully in office",
+    "Dell": "fully in office",
+    "Roblox": "too competitive"
+}
+
 def calculate_tier(company_data):
-    if float(company_data["work_life_balance"]) < 3.4 \
+    if (company_data["company_name"]) in exclusions:
+        return 'X'
+    elif float(company_data["work_life_balance"]) < 3.4 \
         or float(company_data["company_culture"]) < 3.1 \
         or company_data["size"] == "1 to 50 employees" \
         or company_data["size"] == "51 to 200 employees":

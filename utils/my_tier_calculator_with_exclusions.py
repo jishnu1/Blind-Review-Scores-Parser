@@ -1,5 +1,6 @@
 exclusions = {
-    "Dell": "5 days in office",
+    "Audible": "fully in office",
+    "Dell": "fully in office",
     "Roblox": "too competitive"
 }
 
