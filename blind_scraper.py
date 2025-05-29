@@ -143,6 +143,7 @@ def get_company_data_from_blind(database, input_company_name):
 
 def process_data(input_company_names):
     with open(OUTPUT_FILE_PATH, "w", newline="") as file:
+        failed_companies = []
         requests_made = 0
         writer = csv.writer(file)
         header_row = []
@@ -180,8 +181,11 @@ def process_data(input_company_names):
                         else:
                             data_row.append("")
             else:
-                data_row.append(input_company_name)
+                failed_companies.append(input_company_name)
             writer.writerow(data_row)
+        print("\nFailed to retrieve data for the following companies:", flush=True)
+        for company in failed_companies:
+            print(f"\t- {company}")
 
 # MAIN FUNCTION
 
