@@ -1,7 +1,14 @@
 exclusions = {
-    "Audible": "fully in office",
-    "Dell": "fully in office",
-    "Roblox": "too competitive"
+    "Audible":      "fully in office",
+    "Ciena":        "no relevant jobs",
+    "Cirrus Logic": "no relevant jobs",
+    "Dell":         "fully in office",
+    "IMC":          "bad location (Chicago)",
+    "Logitech":     "no relevant jobs",
+    "Lululemon":    "bad location (Seattle)",
+    "Nintendo":     "bad location (Redmond)",
+    "Riot Games":   "bad location (Los Angeles)",
+    "Ubisoft":      "bad location (Canada)"
 }
 
 def calculate_tier(company_data):
